@@ -7,6 +7,8 @@ import { isCreatingAtom } from "@/state/atom";
 import { useSetAtom } from "jotai";
 import { XIcon } from "lucide-react";
 import { parsePhoneNumber, isValidPhoneNumber } from 'libphonenumber-js';
+import { toast } from "@/hooks/use-toast";
+
 
 const CreateContact = () => {
   const setIsCreating = useSetAtom(isCreatingAtom);
@@ -52,6 +54,8 @@ const CreateContact = () => {
         const formattedPhone = phoneNumber.formatInternational();
         createContact({ ...form, phone: formattedPhone });
       }
+      toast({ description: 'Contact added successfully!' });
+
     } catch (error) {
       createContact(form);
     }

@@ -11,6 +11,7 @@ import {
 import { useAtom } from "jotai";
 import { useCallback } from 'react';
 import { Filter } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 import { useContacts } from '@/hooks/useContacts';
 import { searchQueryAtom, filterLetterAtom, selectedContactAtom, isCreatingAtom, mobileViewAtom } from "@/state/atom";
@@ -49,7 +50,7 @@ const ContactList = () => {
             return a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
         })
         .filter((contact) =>
-            contact.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
+            contact.name.toLowerCase().startsWith(searchQuery.toLowerCase()) &&
             (!filterLetter || contact.name.toLowerCase().startsWith(filterLetter))
         );
 
@@ -65,7 +66,41 @@ const ContactList = () => {
     const getRandomImage = (name: string) => `https://robohash.org/${name}`;
 
 
-    if (isLoading) return <div>Loading...</div>;
+    if (isLoading) {
+        return (
+            <main className="md:col-span-2 lg:col-span-5 min-w-[400px] bg-white rounded-lg shadow-lg h-[calc(100vh-2rem)] flex flex-col">
+                <Card className="border-0 h-full flex flex-col">
+                    <CardHeader className="border-b bg-gray-50/50 flex-shrink-0">
+                        <div className="flex items-center justify-between">
+                            <CardTitle className="text-xl font-semibold">Contacts</CardTitle>
+                            <div className="md:hidden">
+                                <Button variant="ghost" size="sm">+ New</Button>
+                            </div>
+                        </div>
+                        <div className="flex gap-2">
+                            <Skeleton className="h-10 flex-1" />
+                            <Skeleton className="h-10 w-10" />
+                        </div>
+                    </CardHeader>
+                    <CardContent className="p-0 flex-1 overflow-auto">
+                        <ul className="divide-y divide-gray-100">
+                            {Array.from({ length: 5 }).map((_, index) => (
+                                <li key={index} className="p-4 flex items-center gap-4">
+                                    <Skeleton className="h-12 w-12 rounded-full" />
+                                    <div className="flex-1 min-w-0">
+                                        <Skeleton className="h-4 w-full" />
+                                        <Skeleton className="h-4 w-1/2 mt-2" />
+                                    </div>
+                                    <Skeleton className="h-6 w-6" />
+                                </li>
+                            ))}
+                        </ul>
+                    </CardContent>
+                </Card>
+            </main>
+        );
+    }
+
     if (error) return <div>Error: {error.message}</div>;
 
     return (
